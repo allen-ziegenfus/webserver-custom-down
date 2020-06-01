@@ -1,0 +1,45 @@
+{
+	"kind": "Deployment",
+	"id": "webserver",
+	"image": "liferaycloud/nginx:1.16.1-4.0.0-beta.1",
+	"memory": 512,
+	"scale": 2,
+	"cpu": 2,
+	"dependencies": ["liferay"],
+	"loadBalancer": {
+		"targetPort": 80,
+		"cdn": false
+	},
+	"readinessProbe": {
+		"httpGet": {
+			"path": "/nginx_status",
+			"port": 80
+		},
+		"initialDelaySeconds": 30,
+		"timeoutSeconds": 10,
+		"failureThreshold": 20
+	},
+	"livenessProbe": {
+		"httpGet": {
+			"path": "/nginx_status",
+			"port": 80
+		},
+		"initialDelaySeconds": 60,
+		"timeoutSeconds": 10,
+		"failureThreshold": 20
+	},
+	"volumes": {
+		"data": "/data"
+	},
+	"environments": {
+		"dev": {
+			"scale": 1
+		},
+		"upgrade": {
+			"scale": 1
+		},
+		"infra": {
+			"deploy": false
+		}
+	}
+}
